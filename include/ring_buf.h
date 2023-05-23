@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 typedef struct ring_buffer {
-  ARR(const char, 20, data);
+  ARR(const char, 4096, data);
   size_t head, tail;
 }ring_buffer;
 
@@ -18,7 +18,7 @@ void rb_init(ring_buffer *rb) {
   memset((char*)rb->data, 0, sizeof(rb->data));
 }
 
-uint32_t rb_put(ring_buffer *__restrict rb, const char *__restrict data, const size_t size) {
+uint8_t rb_put(ring_buffer *__restrict rb, const char *__restrict data, const size_t size) {
   if(rb->head + size <= sizeof(rb->data)) {
     memcpy((char *)rb->data + rb->head, data, size);
     rb->head += size;
@@ -35,7 +35,7 @@ uint32_t rb_put(ring_buffer *__restrict rb, const char *__restrict data, const s
   return 0;
 }
 
-uint32_t rb_put_ow(ring_buffer *__restrict rb, const char *__restrict data, const size_t size) {
+uint8_t rb_put_ow(ring_buffer *__restrict rb, const char *__restrict data, const size_t size) {
   if(rb->head + size <= sizeof(rb->data)) {
     memcpy((char *)rb->data + rb->head, data, size);
   } else {
@@ -46,11 +46,6 @@ uint32_t rb_put_ow(ring_buffer *__restrict rb, const char *__restrict data, cons
   }
   return 0;
 }
-
-//     -     +
-// ==========================
-// 1 2 3 4 5 6 7
-// ==========================
 
 void rb_get(ring_buffer *__restrict rb, char *__restrict buf, const size_t size, const size_t buf_size) {
 
